@@ -1,0 +1,15 @@
+
+######################################################
+# Sample order file for the OpenLoops BLHA interface #
+######################################################
+
+Model                 SMdiag
+CorrectionType        QCD
+Extra AnswerFile      OLE_answer.lh
+
+mass(23)      91.2
+
+# process list
+CouplingPower QED 1
+AmplitudeType Loop
+1 -1 -> 23 2 -2

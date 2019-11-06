@@ -1,0 +1,52 @@
+
+## Sample configuration file for OpenLoops.
+## To override default options,
+## * rename this file to openloops.cfg,
+## * uncommment and set the corresponding options.
+
+[OpenLoops]
+
+## Number of jobs for parallel build, 0=automatic (use all CPU cores)
+#num_jobs = 0
+
+## Compile real radiation amplitudes included in most born*loop libraries, 0=off (default), 1=on
+#compile_extra = 0
+
+## Compiler executables for Fortran, C, C++ and the C preprocessor.
+## Supported Fortran compilers: gfortran and ifort
+## (if ifort is used, the compiler executable name should start with "ifort",
+## otherwise fortran_tool=ifort must be set)
+#fortran_compiler = gfortran
+#cc = gcc
+#cxx = g++
+#cpp = cpp
+
+## compiler flags
+#gfortran_f77_flags = -ffixed-line-length-132 -std=legacy
+#gfortran_f90_flags =
+#gfortran_f_flags =
+#ifort_f77_flags = -132
+#ifort_f90_flags =
+#ifort_f_flags =
+#ccflags = -Wall
+#cxxflags = -std=c++11 -Wextra -fext-numeric-literals
+
+## Debug level: bitwise combination of 1 (debug flag), 2 (disable optimisation), 4 (array bound checks)
+#debug = 0
+## added to f_flags if debug = 1,3,5,7
+#debug_flags_1 = -g
+## added to f_flags if debug = 4,5,6,7
+#gfortran_debug_flags_4 = -Warray-bounds -fbounds-check
+#ifort_debug_flags_4 = -CB
+## Compiler optimisation level
+#generic_optimisation = -O2
+#born_optimisation = -O2
+#loop_optimisation = -O0
+#link_optimisation = -O2
+
+## The following options can be used to link external libraries
+## instead of the ones shipped with OpenLoops.
+## Third-party libraries shipped with OpenLoops to compile and link
+#compile_libraries = rambo collier cuttools trred
+## linker options
+#link_flags =

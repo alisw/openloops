@@ -1,0 +1,78 @@
+#!******************************************************************************!
+#! Copyright (C) 2014-2019 OpenLoops Collaboration. For authors see authors.txt !
+#!                                                                              !
+#! This file is part of OpenLoops.                                              !
+#!                                                                              !
+#! OpenLoops is free software: you can redistribute it and/or modify            !
+#! it under the terms of the GNU General Public License as published by         !
+#! the Free Software Foundation, either version 3 of the License, or            !
+#! (at your option) any later version.                                          !
+#!                                                                              !
+#! OpenLoops is distributed in the hope that it will be useful,                 !
+#! but WITHOUT ANY WARRANTY; without even the implied warranty of               !
+#! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                !
+#! GNU General Public License for more details.                                 !
+#!                                                                              !
+#! You should have received a copy of the GNU General Public License            !
+#! along with OpenLoops.  If not, see <http://www.gnu.org/licenses/>.           !
+#!******************************************************************************!
+
+# Usage:
+# scons -f pyol/build/define_process.scons PROC=<process>
+#   <process> is either the process library name
+#     if the definition file is in the default directory process_definition_dir,
+#     or the path to the definition file;
+
+from __future__ import print_function
+
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join('pyol', 'tools')))
+
+import OLBaseConfig
+
+commandline_options = [arg for arg in ARGLIST if arg[0] not in ['PROC']]
+config = OLBaseConfig.get_config(commandline_options)
+
+if config['print_python_version']:
+    print('define_process.scons uses Python', sys.version)
+
+processlib = ARGUMENTS.get('PROC', '')
+if processlib == '':
+  print('Process must be given on the command line as PROC=process')
+  Exit(1)
+
+if not processlib.endswith('.m'):
+    # look for process definition in the default process definition directory
+    process_def = os.path.join(config['process_def_dir'], processlib + '.m')
+
+if not os.path.isfile(process_def):
+    print("ERROR: process definition file", process_def, "not found.")
+    Exit(1)
+
+env = Environment()
+
+env.Replace(MATH = config['math_cmd'],
+            MATHFLAGS = config['math_flags'],
+            DEFINEPROCESS = config['definition_processor_prg'],
+            GENERATORMODE = config['generator_mode'],
+            PROCESSAPI = config['process_api_version'])
+
+if '@all' in config['import_env']:
+    env['ENV'] = os.environ
+else:
+    for envvar in config['import_env']:
+        env['ENV'][envvar] = os.environ.get(envvar, '')
+
+subprocess_list = os.path.join(config['process_src_dir'], processlib, 'process_definition', 'subprocesses.list')
+
+defined_process = env.Command(
+    subprocess_list, process_def,
+    '$MATH $MATHFLAGS -f$SOURCE --mode=$GENERATORMODE --api=$PROCESSAPI -run "<<$DEFINEPROCESS;Quit[];"')
+
+Depends(defined_process, [config['definition_processor_prg']])
+
+# rename default target, displayed as 'scons: `target' is up to date'
+env.Alias('process_definition_' + processlib, defined_process)
+Default('process_definition_' + processlib)

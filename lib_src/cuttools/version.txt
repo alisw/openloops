@@ -1,0 +1,9 @@
+
+CutTools 1.9.5
+- using compiler instrinsic quad precision (kind=16)
+- QCDLoop deactivated, commented source:
+  cts_cuttools.f90:83-93
+  cts_loopfunctions.f90:113-117,160-168,212-218,272-279,404-408,455-468,518-527,590-603
+  cts_cutroutines.f90:158-166
+- Check for olo_errorcode after dp olo() calls and print calls in case of errors
+  (uses OneLOops's munit to determine if and where to write messages).

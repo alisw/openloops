@@ -1,0 +1,61 @@
+
+==================
+OpenLoops examples
+==================
+
+This file explains how to compile the OpenLoops examples
+and how to link OpenLoops to your own programs.
+
+
+This folder contains four OpenLoops examples
+
+    OL_minimal: minimal Fortran program to calculate a loop matrix element with OpenLoops
+    OL_fortran: Fortran example
+    OL_cpp:     C++ example, equivalent to OL_fortran
+    OL_blha:    C++ example using the BLHA interface with the order file OLE_order.lh
+
+To compile the examples, run
+
+    ../scons
+
+To remove object code and executables
+
+    ../scons -c
+
+Before running the examples, the process library "ppzjj" must be installed.
+
+    # from the OpenLoops installation folder run
+    ./openloops libinstall ppzjj
+
+
+How to use OpenLoops in your own programs
+
+  * If you use Fortran, load the OpenLoops module with "use openloops"
+    and include the openloops module path
+    (compiler option -I<ol_install_dir>/lib_src/openloops/mod)
+  * Link the openloops library to your executable.
+    (linker option -lopenloops)
+  * Set the library path so that the linker finds libopenloops.so at compile time
+    (linker option -L<ol_install_dir>/lib)
+  * Set LD_LIBRARY_PATH=<ol_install_dir>/lib so that the linker finds libopenloops.so at runtime
+    (alternatively you can set the RPATH, gcc linker option -Wl,-rpath=<ol_install_dir>/lib)
+  * On MacOSX you have to set DYLD_LIBRARY_PATH=<ol_install_dir>/lib
+
+Examples
+
+  * Compile and link in one step
+
+    # Fortran
+    gfortran -o OL_fortran -Wl,-rpath=../lib -I../lib_src/openloops/mod -L../lib -lopenloops OL_fortran.f90
+    # C++
+    g++ -o OL_cpp -Wl,-rpath=../lib -L../lib -lopenloops OL_cpp.cpp
+
+  * First compile, then link
+
+    # Fortran
+    gfortran -o OL_fortran.o -c -I../lib_src/openloops/mod OL_fortran.f90
+    gfortran -o OL_fortran -Wl,-rpath=../lib -L../lib -lopenloops OL_fortran.o
+
+    # C++
+    g++ -o OL_cpp.o -c OL_cpp.cpp
+    g++ -o OL_cpp -Wl,-rpath=../lib -L../lib -lopenloops OL_cpp.o

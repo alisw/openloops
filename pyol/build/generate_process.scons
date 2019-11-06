@@ -1,0 +1,160 @@
+#!******************************************************************************!
+#! Copyright (C) 2014-2019 OpenLoops Collaboration. For authors see authors.txt !
+#!                                                                              !
+#! This file is part of OpenLoops.                                              !
+#!                                                                              !
+#! OpenLoops is free software: you can redistribute it and/or modify            !
+#! it under the terms of the GNU General Public License as published by         !
+#! the Free Software Foundation, either version 3 of the License, or            !
+#! (at your option) any later version.                                          !
+#!                                                                              !
+#! OpenLoops is distributed in the hope that it will be useful,                 !
+#! but WITHOUT ANY WARRANTY; without even the implied warranty of               !
+#! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                !
+#! GNU General Public License for more details.                                 !
+#!                                                                              !
+#! You should have received a copy of the GNU General Public License            !
+#! along with OpenLoops.  If not, see <http://www.gnu.org/licenses/>.           !
+#!******************************************************************************!
+
+# Usage:
+# scons -f pyol/build/generate_process.scons \
+#   PROC=<process> \
+#   LOOPS=<one of OLBaseConfig.loops_specifications, default 't'>
+
+from __future__ import print_function
+
+import os
+import sys
+import subprocess
+
+sys.path.insert(0, os.path.abspath(os.path.join('pyol', 'tools')))
+
+import OLBaseConfig
+import OLToolbox
+
+commandline_options = [arg for arg in ARGLIST
+                       if arg[0] not in ['PROC', 'LOOPS']]
+config = OLBaseConfig.get_config(commandline_options)
+
+if config['print_python_version']:
+    print('generate_process.scons uses Python', sys.version)
+
+scons_cmd = [sys.argv[0]]
+olpython = os.environ.get('OLPYTHON', None)
+if olpython:
+    scons_cmd = [olpython] + scons_cmd
+
+AddOption('--log', dest='save_log', action='store_true', default=False,
+          help='Write generator output to a log file.')
+
+save_log = GetOption('save_log')
+
+if GetOption('num_jobs') > 1:
+    save_log = True
+
+# get the process from the command line
+processlib = ARGUMENTS.get('PROC', '')
+if processlib == '':
+    print('Process must be given on the command line as PROC=process')
+    Exit(1)
+
+# run the process definition scons script
+if subprocess.call(scons_cmd + ['-Q', '-f',
+                    config['definition_processor_script'],
+                    'PROC=' + processlib] +
+                   ['='.join(arg) for arg in commandline_options]) != 0:
+    print('ERROR: Process definition preprocessor failed.')
+    Exit(1)
+
+loops = ARGUMENTS.get('LOOPS', 't')
+processlib_src_dir = os.path.join(config['process_src_dir'], processlib)
+git_revision = str(OLToolbox.get_git_revision(mandatory = False))
+process_api_version = config['process_api_version']
+
+# load the list of sub-processes
+subprocesses = OLToolbox.import_list(
+    os.path.join(processlib_src_dir, 'process_definition', 'subprocesses.list'),
+    error_message = 'ERROR: reading subprocesses.list for '
+                  + processlib + ' failed')
+subprocesses_extra = OLToolbox.import_list(
+    os.path.join(processlib_src_dir, 'process_definition',
+                 'subprocesses_extra.list'), fatal=False)
+if subprocesses_extra:
+    subprocesses.extend(subprocesses_extra)
+
+env = Environment(tools = ['default', 'textfile'],
+                  MATH = config['math_cmd'],
+                  MATHFLAGS = config['math_flags'],
+                  RUNGENERATOR = config['code_generator_prg'],
+                  PROC = processlib,
+                  TEXTFILESUFFIX = '',
+                  SUBST_DICT = {'@LOOPS@': loops,
+                                '@PROCESS@': processlib,
+                                '@REVISION@': git_revision,
+                                '@PROCESS_API@': process_api_version})
+
+if '@all' in config['import_env']:
+    env['ENV'] = os.environ
+else:
+    for envvar in config['import_env']:
+        env['ENV'][envvar] = os.environ.get(envvar, '')
+
+if save_log:
+    import datetime
+    log_dir = os.path.join(
+        'log', datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S'))
+
+processlib_src = []
+
+for sub_process in subprocesses:
+    subprocess_definition = os.path.join(processlib_src_dir, 'process_definition', 'procdef_' + sub_process + '.m')
+    # Check process definition for ForceLoops and override 'loops' if necessary.
+    force_loops = loops
+    procdef = OLToolbox.import_list(
+        subprocess_definition,
+        error_message = 'ERROR: reading process definition '
+                      + subprocess_definition + ' failed.')
+    for line in procdef:
+        if line.startswith('ForceLoops'):
+            line = line.split('=',1)[1].replace(';','').replace('"','').strip()
+            if line != 'Automatic':
+                force_loops = line
+            break
+
+    subprocess_src = OLToolbox.get_subprocess_src(
+        force_loops, sub_process, processlib_src_dir, config, nvirtualfiles=1)
+    subprocess_src = sum(subprocess_src, [])
+    if save_log:
+        create_log_dir = '$( mkdir -p ' + log_dir + '; $) '
+        generator_log = ' $( 2>&1 > ' + os.path.join(log_dir, sub_process + '.log $)')
+    else:
+        create_log_dir = ''
+        generator_log = ''
+    processlib_src.extend(env.Command(
+        subprocess_src, subprocess_definition,
+        #'$MATH $MATHFLAGS --loops=$LOOPS --proc=$PROC --src=$SOURCE < $RUNGENERATOR' + generator_log))
+        create_log_dir + '$( $MATH $) $MATHFLAGS --loops=$LOOPS --proc=$PROC --src=$SOURCE -run "<<$RUNGENERATOR;Quit[];"' + generator_log, LOOPS = force_loops))
+
+version_src = env.Substfile(os.path.join(processlib_src_dir, 'version_' + processlib + '.F90'),
+                                         [os.path.join(config['template_dir'], 'version.mf')])
+
+version_info_file = os.path.join(processlib_src_dir, 'version.info')
+version_info = env.Textfile(version_info_file,
+                  ['loops @LOOPS@', 'git_revision @REVISION@', 'process_api_version @PROCESS_API@', ''])
+
+# global library options, used in info file
+library_info = env.Command(
+    os.path.join(processlib_src_dir, 'info_' + processlib + '.txt'),
+    os.path.join(processlib_src_dir, 'process_definition', 'library.info'),
+    Copy('$TARGET', '$SOURCE'))
+
+processlib_src.append(version_src)
+processlib_src.append(version_info)
+processlib_src.append(library_info)
+
+Depends(processlib_src, config['generator_dependencies'])
+
+# rename default target, displayed as 'scons: `target' is up to date'
+env.Alias('process_code_' + processlib, processlib_src)
+Default('process_code_' + processlib)

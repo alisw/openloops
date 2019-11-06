@@ -1,0 +1,169 @@
+#!******************************************************************************!
+#! Copyright (C) 2014-2019 OpenLoops Collaboration. For authors see authors.txt !
+#!                                                                              !
+#! This file is part of OpenLoops.                                              !
+#!                                                                              !
+#! OpenLoops is free software: you can redistribute it and/or modify            !
+#! it under the terms of the GNU General Public License as published by         !
+#! the Free Software Foundation, either version 3 of the License, or            !
+#! (at your option) any later version.                                          !
+#!                                                                              !
+#! OpenLoops is distributed in the hope that it will be useful,                 !
+#! but WITHOUT ANY WARRANTY; without even the implied warranty of               !
+#! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                !
+#! GNU General Public License for more details.                                 !
+#!                                                                              !
+#! You should have received a copy of the GNU General Public License            !
+#! along with OpenLoops.  If not, see <http://www.gnu.org/licenses/>.           !
+#!******************************************************************************!
+
+# OpenLoops multi-precision preprocessor
+#
+# usage:
+# scons -f cpp.scons \
+#   mp_src=mpsrc1.F90,mpsrc2.F90,... \
+#   dp_src=spsrc.F90,... \
+#   version_src=vsrc.F90,... \
+#   mp=dp,qp \
+#   def=VAR1=val,VAR2,... \
+#   version=1.0 \
+#   revision=42 \
+#   cpp_cmd=cpp \
+#   kind_parameter=REALKIND \
+#   version_macro=VERSION \
+#   revision_macro=REVISION \
+#   target=cpp
+#
+# mp_src is preprocessed with cpp_defs and kind_parameter=p for each p in mp;
+# dp_src is preprocessed once with cpp_defs and kind_parameter=mp[0];
+# version_src is preprocessed once with cpp_defs and kind_parameter=mp[0], version_macro=version, revision_macro=revision;
+# target is the name of the scons target (displayed as 'scons: `target' is up to date');
+#
+# automatic cpp defines
+#   USE_p if precision p is active globally
+#   PRECISION_p if the currect file is for precision p
+
+# TODO: better use a pseudo builder to modify target directories
+
+from __future__ import print_function
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join('pyol', 'tools')))
+import OLBaseConfig
+config = OLBaseConfig.get_config()
+
+if config['print_python_version']:
+    print('cpp.scons uses Python', sys.version)
+
+cpp_flags = ['--traditional-cpp', '-P']
+
+def split_and_clean(ls):
+    """Create a list from a comma separated string and remove empty elements."""
+    return list(filter(lambda el: len(el) != 0, ls.split(',')))
+
+mp_src      = split_and_clean(ARGUMENTS.get('mp_src',      ''))
+dp_src      = split_and_clean(ARGUMENTS.get('dp_src',      ''))
+version_src = split_and_clean(ARGUMENTS.get('version_src', ''))
+cpp_defs    = split_and_clean(ARGUMENTS.get('def',         ''))
+mp          = split_and_clean(ARGUMENTS.get('mp',        'dp'))
+cpp_cmd        = ARGUMENTS.get('cpp_cmd',     config['cpp'])
+kind_parameter = ARGUMENTS.get('kind_parameter', 'REALKIND')
+version_macro  = ARGUMENTS.get('version_macro',  'VERSION' )
+process_api_macro = ARGUMENTS.get('process_api_macro', 'PROCESSAPI')
+revision_macro = ARGUMENTS.get('revision_macro', 'REVISION')
+version        = ARGUMENTS.get('version',        'none'    )
+process_api = ARGUMENTS.get('process_api',         '-1'    )
+revision       = ARGUMENTS.get('revision',       'none'    )
+target         = ARGUMENTS.get('target',         'cpp'     )
+target_prefix  = ARGUMENTS.get('prefix',         ''        )
+
+install_path = '""'
+for cppdef in cpp_defs:
+    if cppdef.startswith('OL_INSTALL_PATH='):
+        install_path = cppdef[16:].replace('\\"', '"')
+cpp_defs = [cppdef for cppdef in cpp_defs if not cppdef.startswith('OL_INSTALL_PATH=')]
+installpath_split = (['  character(len=max_parameter_length) :: install_path = &'] +
+    ['&' + install_path[i:i+100] + '&' for i in range(0, len(install_path), 100)])
+installpath_split[-1] = installpath_split[-1][:-1]
+installpath_split.append('')
+
+cpp_defs = [cpp_def.split('=', 1) for cpp_def in cpp_defs] + [[kind_parameter, '$PRECISION']]
+if 'qp_rescue' in mp:
+    cpp_defs += ['USE_qp']
+if 'qp_checks' in mp:
+    cpp_defs += ['USE_CHECK_qp']
+mp = [prec for prec in mp if not prec.startswith('qp_')]
+cpp_defs_version = cpp_defs + [
+    [version_macro, '\\"' + version + '\\"'],
+    [process_api_macro, process_api],
+    [revision_macro, '\\"' + revision + '\\"']]
+
+
+def target_rename(target, source, env):
+    """Add target_prefix, precision suffix and file extension (lowercase source extension) to target."""
+    global target_prefix
+    ext = os.path.splitext(str(source[0]))[1]
+    path, tgt = os.path.split(str(target[0]))
+    suffix = env.subst('$PRECISION')
+    if suffix:
+        if suffix == 'dp':
+            suffix = ''
+        else:
+            suffix = '_' + suffix
+    return os.path.join(path, target_prefix + tgt + suffix + ext.lower()), source
+
+
+cpp_builder = Builder(action = '$CPP $CPPFLAGS $_CPPDEFFLAGS $SOURCE $TARGET',
+                      emitter = target_rename,
+                      single_source = 1)
+copy_builder = Builder(action = Copy('$TARGET', '$SOURCE'),
+                       emitter = target_rename,
+                       single_source = 1)
+
+if '@all' in config['import_env']:
+    imported_env = os.environ
+else:
+    imported_env = {}
+    for envvar in config['import_env']:
+        imported_env[envvar] = os.environ.get(envvar, '')
+
+env = Environment(tools = ['default', 'textfile'],
+                  CPP = cpp_cmd,
+                  ENV = imported_env,
+                  BUILDERS = {'CPP': cpp_builder, 'COPY': copy_builder},
+                  CPPFLAGS = cpp_flags,
+                  CPPDEFINES = cpp_defs + ['PRECISION_' + mp[0]],
+                  PRECISION = mp[0])
+
+cpp_out = []
+
+for precision in mp:
+    if precision == 'dp':
+        dp_fsrc = [fs for fs in dp_src if not fs.endswith('.c')]
+        src = mp_src + dp_fsrc
+    else:
+        src = mp_src
+    if src:
+        cpp_out.extend(env.CPP(source = src,
+                               PRECISION = precision,
+                               CPPDEFINES = cpp_defs + ['PRECISION_' + precision]))
+
+if dp_src:
+    dp_csrc = [cs for cs in dp_src if cs.endswith('.c')]
+    if dp_csrc:
+        cpp_out.extend(env.COPY(source = dp_csrc, PRECISION = ''))
+
+if version_src:
+    version_node = env.CPP(source = version_src,
+                           CPPDEFINES = cpp_defs_version,
+                           PRECISION = '')
+    cpp_out.extend(version_node)
+    installpath_file = os.path.join(os.path.split(str(version_node[0]))[0],
+                                    'install_path.inc')
+    cpp_out.extend(env.Textfile(installpath_file,
+                                installpath_split))
+
+# rename default target, displayed as 'scons: `target' is up to date'
+env.Alias(target, cpp_out)
+Default(target)

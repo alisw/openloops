@@ -1,0 +1,7 @@
+
+OneLOop, version 3.6.1 from 11 Dec 2015
+
+# quad precision library created by
+./src/avh_olo.py dpkind="dp" qpkind="qp" kindmod="kind_types" cppintf="no"
+
+Made munit public as olo_messageunit.

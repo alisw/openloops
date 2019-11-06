@@ -1,0 +1,35 @@
+
+cwd = Dir('..').abspath
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(cwd, 'pyol', 'tools')))
+import OLBaseConfig
+
+OLBaseConfig.prefix = cwd
+config = OLBaseConfig.get_config(ARGLIST)
+
+if '@all' in config['import_env']:
+    imported_env = os.environ
+else:
+    imported_env = {}
+    for envvar in config['import_env']:
+        imported_env[envvar] = os.environ.get(envvar, '')
+
+env = Environment(tools = ['default', config['fortran_tool']],
+                  ENV = imported_env,
+                  CXX = config['cxx'],
+                  F90 = config['fortran_compiler'],
+                  CPPPATH = os.path.join(cwd, 'include'),
+                  CCFLAGS = config['ccflags'] + config['generic_optimisation'],
+                  FORTRAN = config['fortran_compiler'],
+                  F90FLAGS = config['f90_flags'] + config['generic_optimisation'],
+                  F90PATH = [os.path.join(cwd, 'lib_src', 'openloops', 'mod')],
+                  LIBPATH = [os.path.join(cwd, config['generic_lib_dir'])],
+                  LINKFLAGS = config['link_flags'],
+                  RPATH = [os.path.join(cwd, config['generic_lib_dir'])])
+
+env.Program('OL_minimal', ['OL_minimal.f90'], LIBS = ['openloops'])
+env.Program('OL_fortran', ['OL_fortran.f90'], LIBS = ['openloops'])
+env.Program('OL_cpp', ['OL_cpp.cpp'], LIBS = ['openloops'])
+env.Program('OL_blha', ['OL_blha.cpp'], LIBS = ['openloops'])
