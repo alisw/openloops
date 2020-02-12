@@ -1517,7 +1517,7 @@ module ol_init
 
     call ol_msg(5, "setparameter_string: " // trim(param)  // " " // trim(val))
 
-    if (len(val) > max_parameter_length - 80) then
+    if (len(val) > max_parameter_length) then
       call ol_fatal("ol_setparameter_string: " // trim(param) // " value must not exceed " // &
              & trim(to_string(max_parameter_length)) // " characters. If necessary, increase " // &
              & "the limit by setting max_string_length in your openloops.cfg and recompile.")

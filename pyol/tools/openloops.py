@@ -49,7 +49,10 @@ config = OLBaseConfig.get_config()
 if config['print_python_version']:
     print('openloops.py uses Python', sys.version)
 
+openloops_path = os.getenv("OpenLoopsPath")
 proclib_dir = 'proclib'
+if len(openloops_path):
+    proclib_dir = os.path.join(openloops_path, "proclib")
 
 c_int_ptr = POINTER(c_int)
 c_double_ptr = POINTER(c_double)
