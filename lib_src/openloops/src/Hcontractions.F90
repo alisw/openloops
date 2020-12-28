@@ -171,6 +171,7 @@ subroutine Hcont_QA(nsync, Q, A, cont, n, t, nhel, den)
 ! cont(1:nhel)   = contractions
 !************************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_cont
   implicit none
@@ -188,13 +189,13 @@ subroutine Hcont_QA(nsync, Q, A, cont, n, t, nhel, den)
       cont(h)%j = 0
     else
     select case (iand(Q(t(1,h))%h,A(t(2,h))%h))
-    case(B"01")
+    case(B01)
       cont(h)%j = Q(t(1,h))%j(3)*A(t(2,h))%j(3) + Q(t(1,h))%j(4)*A(t(2,h))%j(4)
       cont(h)%j = cont(h)%j * den
-    case(B"10")
+    case(B10)
       cont(h)%j = Q(t(1,h))%j(1)*A(t(2,h))%j(1) + Q(t(1,h))%j(2)*A(t(2,h))%j(2)
       cont(h)%j = cont(h)%j * den
-    case(B"00")
+    case(B00)
       cont(h)%j = 0
     case default
       cont(h)%j = Q(t(1,h))%j(1)*A(t(2,h))%j(1) + Q(t(1,h))%j(2)*A(t(2,h))%j(2) &

@@ -25,6 +25,7 @@ module ol_hel_propagators_/**/REALKIND
 ! - prop_A_Q: anti-fermion
 ! - prop_W_W: massive vector boson in unitary gauge
 ! *****************************************************************************
+  use KIND_TYPES_BW
   implicit none
   contains
 
@@ -77,31 +78,31 @@ subroutine prop_Q_A(ntry, Q, mom, M, mQ, Q_out, n)
 
     select case (Q(h)%h)
 
-    case (B"01")
+    case (B01)
       Q_out(h)%j(1) = - K(2)*Q(h)%j(3) + K(4)*Q(h)%j(4)
       Q_out(h)%j(2) = - K(1)*Q(h)%j(4) + K(3)*Q(h)%j(3)
       if (mQ == 0) then
         Q_out(h)%j(3:4) = 0
-        Q_out(h)%h      = B"10"
+        Q_out(h)%h      = B10
       else
         Q_out(h)%j(3:4) = M*Q(h)%j(3:4)
-        Q_out(h)%h      = B"11"
+        Q_out(h)%h      = B11
       end if
 
-    case (B"10")
+    case (B10)
       Q_out(h)%j(3) = - K(1)*Q(h)%j(1) - K(4)*Q(h)%j(2)
       Q_out(h)%j(4) = - K(2)*Q(h)%j(2) - K(3)*Q(h)%j(1)
       if (mQ == 0) then
         Q_out(h)%j(1:2) = 0
-        Q_out(h)%h      = B"01"
+        Q_out(h)%h      = B01
       else
         Q_out(h)%j(1:2) = M*Q(h)%j(1:2)
-        Q_out(h)%h      = B"11"
+        Q_out(h)%h      = B11
       end if
 
-    case (B"00")
+    case (B00)
       Q_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-      Q_out(h)%h = B"00"
+      Q_out(h)%h = B00
 
     case default
       if (mQ == 0) then
@@ -115,7 +116,7 @@ subroutine prop_Q_A(ntry, Q, mom, M, mQ, Q_out, n)
         Q_out(h)%j(3) = - K(1)*Q(h)%j(1) - K(4)*Q(h)%j(2) + M*Q(h)%j(3)
         Q_out(h)%j(4) = - K(2)*Q(h)%j(2) - K(3)*Q(h)%j(1) + M*Q(h)%j(4)
       end if
-      Q_out(h)%h      = B"11"
+      Q_out(h)%h      = B11
 
     end select
 
@@ -179,31 +180,31 @@ subroutine prop_A_Q(ntry, A, mom, M, mA, A_out, n)
   do h = 1, n
     select case (A(h)%h)
 
-    case (B"01")
+    case (B01)
       A_out(h)%j(1) = + K(1)*A(h)%j(3) + K(3)*A(h)%j(4)
       A_out(h)%j(2) = + K(2)*A(h)%j(4) + K(4)*A(h)%j(3)
       if (mA == 0) then
         A_out(h)%j(3:4) = 0
-        A_out(h)%h      = B"10"
+        A_out(h)%h      = B10
       else
         A_out(h)%j(3:4) = M*A(h)%j(3:4)
-        A_out(h)%h      = B"11"
+        A_out(h)%h      = B11
       end if
 
-    case (B"10")
+    case (B10)
       A_out(h)%j(3) = + K(2)*A(h)%j(1) - K(3)*A(h)%j(2)
       A_out(h)%j(4) = + K(1)*A(h)%j(2) - K(4)*A(h)%j(1)
       if (mA == 0) then
         A_out(h)%j(1:2) = 0
-        A_out(h)%h      = B"01"
+        A_out(h)%h      = B01
       else
         A_out(h)%j(1:2) = M*A(h)%j(1:2)
-        A_out(h)%h      = B"11"
+        A_out(h)%h      = B11
       end if
 
-    case (B"00")
+    case (B00)
       A_out(h)%j = 0  ! needed to detect vanishing helicity configurations
-      A_out(h)%h = B"00"
+      A_out(h)%h = B00
 
     case default
       if (mA == 0) then
@@ -217,7 +218,7 @@ subroutine prop_A_Q(ntry, A, mom, M, mA, A_out, n)
         A_out(h)%j(3) = + K(2)*A(h)%j(1) - K(3)*A(h)%j(2) + M*A(h)%j(3)
         A_out(h)%j(4) = + K(1)*A(h)%j(2) - K(4)*A(h)%j(1) + M*A(h)%j(4)
       end if
-      A_out(h)%h = B"11"
+      A_out(h)%h = B11
 
     end select
 

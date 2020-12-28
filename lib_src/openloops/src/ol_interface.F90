@@ -491,7 +491,7 @@ module openloops
 
     call get_environment_variable("OpenLoopsPath", tmp)
     if (len_trim(tmp) /= 0) then
-      call set_parameter("install_path", trim(tmp), error)
+      call set_parameter("install_path", tmp, error)
     end if
 
     call ol_msg(3,"registering process: " // trim(process_in) )

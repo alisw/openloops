@@ -216,6 +216,12 @@ else:
 # run #
 # === #
 
+def gettime():
+    if sys.version_info > (3,3):
+        return time.perf_counter()
+    else:
+        return time.clock()
+
 if args.parallel < 0:
     # evaluation in main process only
     for proc in processes:
@@ -234,7 +240,7 @@ if args.parallel < 0:
             psp = proc.psp(args.energy)
             mes = eval_me(proc, psp)
             print_me(mes)
-            starttime = time.clock()
+            starttime = gettime()
             npoints = 0
             if args.n is not None:
                 npoints = args.n
@@ -243,13 +249,13 @@ if args.parallel < 0:
                     mes = eval_me(proc, psp)
                     print_me(mes)
             else:
-                while (time.clock() < starttime + args.mintime or
+                while (gettime() < starttime + args.mintime or
                     npoints < args.minn):
                     npoints = npoints + 1
                     psp = proc.psp(args.energy)
                     mes = eval_me(proc, psp)
                     print_me(mes)
-            endtime = time.clock()
+            endtime = gettime()
             print(('time per phase space point: {:3f} ms (avg. of {} ' +
                 'points)').format(1000*(endtime - starttime)/npoints, npoints))
 

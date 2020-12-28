@@ -41,7 +41,8 @@ sys.path.insert(0, os.path.abspath(os.path.join('pyol', 'tools')))
 import OLBaseConfig
 import OLToolbox
 
-config = OLBaseConfig.get_config()
+commandline_options = [arg.split('=',1) for arg in sys.argv[1:] if ('=' in arg and not arg.startswith('-'))]
+config = OLBaseConfig.get_config(commandline_options)
 
 if config['print_python_version']:
     print('upload_process.py uses Python', sys.version)
@@ -102,7 +103,8 @@ def create_repository(repo, secret=False):
     return repo
 
 
-args = parser.parse_args()
+args = parser.parse_args(
+    [arg for arg in sys.argv[1:] if (arg.startswith('-') or '=' not in arg)])
 
 process_list = sum([proc.replace(',', ' ').split()
                     for proc in args.processes], [])

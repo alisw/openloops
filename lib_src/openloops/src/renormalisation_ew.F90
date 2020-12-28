@@ -19,7 +19,7 @@
 
 
 module ol_ew_renormalisation_/**/REALKIND
-  use KIND_TYPES, only: REALKIND
+  use KIND_TYPES, only: REALKIND, intkind1
   implicit none
   complex(REALKIND), save      ::   IRrational = -1 ! Rational contribution from IR divergent fermion self energies
   contains
@@ -49,7 +49,7 @@ subroutine ew_renormalisation
   real(REALKIND) :: deB_UV, deB_IR, deT_UV, deT_IR
   real(REALKIND) :: eps=1.e-17
   logical :: zeromasses(6)  ! maximal allowed number of quarks
-  integer :: debug_ew_renorm = 0
+  integer(intkind1) :: debug_ew_renorm = 0
 
 !for debugging with ABC
   real(REALKIND), save         :: debug_norm = 1._/**/REALKIND
@@ -640,7 +640,6 @@ subroutine ew_renormalisation
 
       dSilS=dSilS-4.*dB0LL0 & ! Photon
           - (ML2*(-dB0LLH + dB0LLZ))/(4.*MW2*sw2) & ! H & X
-          - (ML2*dB0L0W)/(2.*MW2*sw2) & ! W
           - 4.*dB0LLZ*gZl(1)*gZl(2)    ! Z
 
       SinlL=SinlL-(1. + (2.+ML2/MW2)*B10LW)/(2.*sw2) &  ! W
@@ -1513,8 +1512,7 @@ subroutine ew_renormalisation
 
         EWctee=EWctee+[1./cw2,(1. + 2*cw2)/(4.*cw2*sw2),ZERO,ZERO]*(-1.)
 
-        EWctll=EWctll+[1/cw2,(1 + 2*cw2)/(4.*cw2*sw2),(-4 + 5/cw2)*ML, &
-                (-4 + 5/cw2)*ML]*(-1.)
+        EWctll=EWctll+[1/cw2,(1. + 2*cw2)/(4.*cw2*sw2),ML/cw2,ML/cw2]*(-1.)
 
         EWctnn=EWctnn+[ZERO,(1. + 2.*cw2)/(4.*cw2*sw2),ZERO,ZERO]*(-1.)
 
@@ -1609,7 +1607,7 @@ subroutine ew_renormalisation
                1/(cw*sw) - 3/(2.*cw3*sw) - (2*sw)/cw + (3*sw)/cw3 -  &
                 1/(2.*cw*sw3) + cw/sw3 + 1/(4.*cw3*sw3) - (2*sw3)/cw3]
 
-        EWctVll=EWctVll+[(-2*sw)/cw3, &
+        EWctVll=EWctVll+[- (2*sw3)/cw3 + (-ML2/(4.*MW2*sw) - 2*sw)/cw, &
                1/(cw*sw) - 3/(2.*cw3*sw) - ML2/(4*cw*MW2*sw) - (2*sw)/cw &
                + (3*sw)/cw3 - 1/(2.*cw*sw3) + cw/sw3 + 1/(4.*cw3*sw3) - (2*sw3)/cw3]
 

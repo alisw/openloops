@@ -22,7 +22,7 @@ module kind_types
   implicit none
 
   integer, parameter :: intkind1 = selected_int_kind(2)
-  integer, parameter :: intkind2 = selected_int_kind(4)
+  integer, parameter :: intkind2 = selected_int_kind(6)
 #ifdef USE_sp
   integer, parameter :: sp = selected_real_kind(6)
   complex(sp), parameter :: cI_sp = (0._sp, 1._sp)
@@ -84,3 +84,24 @@ module kind_types
     if (present(im)) cmplx_qp = cmplx_qp + im * cI_qp
   end function cmplx_qp
 end module kind_types
+
+module kind_types_bw
+  use kind_types, only: intkind1
+  implicit none
+
+  integer, parameter :: B00 = int(B"00", kind=intkind1)
+  integer, parameter :: B11 = int(B"11", kind=intkind1)
+  integer, parameter :: B01 = int(B"01", kind=intkind1)
+  integer, parameter :: B10 = int(B"10", kind=intkind1)
+  integer, parameter :: B1111 = int(B"1111", kind=intkind1)
+  integer, parameter :: B1001 = int(B"1001", kind=intkind1)
+  integer, parameter :: B1010 = int(B"1010", kind=intkind1)
+  integer, parameter :: B1110 = int(B"1110", kind=intkind1)
+  integer, parameter :: B1011 = int(B"1011", kind=intkind1)
+  integer, parameter :: B0110 = int(B"0110", kind=intkind1)
+  integer, parameter :: B0111 = int(B"0111", kind=intkind1)
+  integer, parameter :: B1101 = int(B"1101", kind=intkind1)
+  integer, parameter :: B0101 = int(B"0101", kind=intkind1)
+
+end module kind_types_bw
+

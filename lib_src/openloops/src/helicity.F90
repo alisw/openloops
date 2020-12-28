@@ -18,6 +18,7 @@
 !******************************************************************************!
 
 module ol_helicity_bookkeeping_/**/REALKIND
+  use KIND_TYPES_BW
   implicit none
   contains
 
@@ -200,7 +201,7 @@ subroutine helbookkeeping_vert3(ntry, WF1, WF2, WF3, n, t)
   ! put vanishing components at the end of WF3 array
   do i = h3 + 1, n(3)
     WF3(i)%j = 0
-    WF3(i)%h = B"00"
+    WF3(i)%h = B00
     WF3(i)%e = -1_intkind2 ! marker for vanising helicity states
   end do
 
@@ -340,7 +341,7 @@ subroutine helbookkeeping_vert4(ntry, WF1, WF2, WF3, WF4, n, t)
   ! put vanishing components at the end of WF4 array
   do i = h4 + 1, n(4)
     WF4(i)%j = 0
-    WF4(i)%h = B"00"
+    WF4(i)%h = B00
     WF4(i)%e = -1_intkind2 ! marker for vanising helicity states
   end do
 
@@ -502,7 +503,7 @@ subroutine helbookkeeping_vert5(ntry, WF1, WF2, WF3, WF4, WF5, n, t)
   ! put vanishing components at the end of WF4 array
   do i = h5 + 1, n(5)
     WF5(i)%j = 0
-    WF5(i)%h = B"00"
+    WF5(i)%h = B00
     WF5(i)%e = -1_intkind2 ! marker for vanising helicity states
   end do
 
@@ -688,7 +689,7 @@ subroutine helbookkeeping_vert6(ntry, WF1, WF2, WF3, WF4, WF5, WF6, n, t)
   ! put vanishing components at the end of WF4 array
   do i = h6 + 1, n(6)
     WF6(i)%j = 0
-    WF6(i)%h = B"00"
+    WF6(i)%h = B00
     WF6(i)%e = -1_intkind2 ! marker for vanising helicity states
   end do
 
@@ -895,7 +896,7 @@ subroutine helbookkeeping_vert7(ntry, WF1, WF2, WF3, WF4, WF5, WF6, WF7, n, t)
   ! put vanishing components at the end of WF7 array
   do i = h7 + 1, n(7)
     WF7(i)%j = 0
-    WF7(i)%h = B"00"
+    WF7(i)%h = B00
     WF7(i)%e = -1_intkind2 ! marker for vanising helicity states
   end do
 

@@ -319,16 +319,27 @@ subroutine parameters_init()
   ! Dependent couplings
 
   !EW
-  if ( cms_on == 0 ) then
-    cw   = rMW/rMZ
+  if (ew_scheme == 3 .or. ew_scheme == 4) then
+    sw2 = sw2_input
+    cw2 = 1 - sw2
+    sw  = sqrt(sw2)
+    cw  = sqrt(cw2)
+    MW  = cw*MZ
+    MW2 = MW**2
+    rMW = real(MW)
   else
-    cw   = MW/MZ
+    if ( cms_on == 0 ) then
+      cw   = rMW/rMZ
+    else
+      cw   = MW/MZ
+    end if
+    cw2    = cw**2
+    sw2    = 1. - cw2
+    sw     = sqrt(sw2)
   end if
-  cw2    = cw**2
+
   cw3    = cw**3
   cw4    = cw2**2
-  sw2    = 1. - cw2
-  sw     = sqrt(sw2)
   sw3    = sw**3
   sw4    = sw2**2
   sw6    = sw2**3
@@ -348,9 +359,9 @@ subroutine parameters_init()
     else
      alpha_QED = alpha_QED_0
     end if
-  else if (ew_scheme == 1) then ! Gmu scheme
+  else if (ew_scheme == 1 .or. ew_scheme == 3) then ! Gmu scheme
     alpha_qed = alpha_qed_gmu
-  else if (ew_scheme == 2) then ! alpha(MZ) scheme
+  else if (ew_scheme == 2 .or. ew_scheme == 4) then ! alpha(MZ) scheme
     if (alpha_QED_input /= 0) then
       alpha_QED = alpha_QED_input
       alpha_QED_MZ = alpha_QED_input
@@ -374,10 +385,10 @@ subroutine parameters_init()
   ! (2) Left-handed  Z-fermion couplings = gf^- = gZLH*(I3f-sw2*Qf) in Denners FRs
   gZRH = -sw/cw
   gZLH = 1/(sw*cw)
-  gZn  = [    ZERO   , gZLH*( 0.5_/**/REALKIND            ) ] ! neutrino
-  gZl  = [   -gZRH   , gZLH*(-0.5_/**/REALKIND +    sw2   ) ] ! lepton
-  gZu  = [ (2*gZRH)/3, gZLH*( 0.5_/**/REALKIND - (2*sw2)/3) ] ! up
-  gZd  = [   -gZRH /3, gZLH*(-0.5_/**/REALKIND +    sw2 /3) ] ! down
+  gZn  = [    ZERO   , gZLH*(I3l(1)            ) ] ! neutrino
+  gZl  = [   -gZRH   , gZLH*(I3l(2) +    sw2   ) ] ! lepton
+  gZu  = [ (2*gZRH)/3, gZLH*(I3l(1) - (2*sw2)/3) ] ! up
+  gZd  = [   -gZRH /3, gZLH*(I3l(2) +    sw2 /3) ] ! down
   ! Right- (1) and left-handed (2) couplings of scalars to fermions
   ! gPud = P+ u~ d; gPdu = P- d~ u; gPnl = P+ n~ l; gPln = P- l~ n (all incoming)
   gPud = [   -YD,   YU ]

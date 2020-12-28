@@ -20,6 +20,7 @@
 
 module ol_wavefunctions_/**/REALKIND
   use KIND_TYPES, only: REALKIND, DREALKIND
+  use KIND_TYPES_BW
   implicit none
   private
   public :: wf_S, wf_V, wf_V_Std, wf_Q, wf_A, wfIN_Q
@@ -209,6 +210,8 @@ subroutine wf_V_Std(P, M, POL, J_V, POLSEL)
 ! J_V(1:4) = EPS^*(-P,POL)
 !          = outgoing vector boson wave function (light-cone representation)
 ! **********************************************************************
+  use ol_debug, only: ol_fatal
+  use ol_parameters_decl_/**/DREALKIND, only: wf_v_select
   implicit none
 
   real(REALKIND),    intent(in)  :: P(0:3), M
@@ -218,13 +221,25 @@ subroutine wf_V_Std(P, M, POL, J_V, POLSEL)
   complex(REALKIND) :: J_AUX(4)
 
   if (P(0) >= 0) then ! incoming gluon -> EPS(P)
-    call wfIN_V(P,M,POL,J_V, POLSEL)
-!    call wf_interface_V(P,M,POL,J_V) ! gauge-fixing of Stefanos algebraic code
-!    call wfIN_V_MG(P,M,POL,J_V) ! MadGraph convention
+    if (wf_v_select == 1) then
+      call wfIN_V(P,M,POL,J_V, POLSEL)
+    else if (wf_v_select == 2) then
+      call wf_interface_V(P,M,POL,J_V) ! gauge-fixing of Stefanos algebraic code
+    else if (wf_v_select == 3) then
+      call wfIN_V_MG(P,M,POL,J_V) ! MadGraph convention
+    else
+      call ol_fatal("chosen wf_V not supported")
+    end if
   else if (P(0) < 0) then ! outgoing gluon -> EPS^*(-P)
-    call wfIN_V(-P,M,POL,J_AUX, POLSEL)
-!    call wf_interface_V(-P,M,POL,J_AUX) ! gauge-fixing Stefanos algebraic code
-!    call wfIN_V_MG(P,M,POL,J_AUX) ! MadGraph convention
+    if (wf_v_select == 1) then
+      call wfIN_V(-P,M,POL,J_AUX, POLSEL)
+    else if (wf_v_select == 2) then
+      call wf_interface_V(-P,M,POL,J_AUX) ! gauge-fixing Stefanos algebraic code
+    else if (wf_v_select == 3) then
+      call wfIN_V_MG(P,M,POL,J_AUX) ! MadGraph convention
+    else
+      call ol_fatal("chosen wf_V not supported")
+    end if
 
     J_V(1) = conjg(J_AUX(1))
     J_V(2) = conjg(J_AUX(2))
@@ -740,6 +755,7 @@ module ol_s_wavefunctions_/**/REALKIND
 ! - wf_V: vector boson
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND
+  use KIND_TYPES_BW
   implicit none
   private
   public :: wf_S, wf_V, wf_Q, wf_A
@@ -791,12 +807,12 @@ subroutine wf_Q(P, M, POL, Q)
   end if
 
   if(M /= 0)then
-    Q%h = B"11"
+    Q%h = B11
   else
     if(POL == 1)then
-      Q%h = B"10"
+      Q%h = B10
     else
-      Q%h = B"01"
+      Q%h = B01
     end if
   end if
 
@@ -841,12 +857,12 @@ subroutine wf_A(P, M, POL, A)
   A%j(4) = -conjg(J_AUX(2))
 
   if(M /= 0)then
-    A%h = B"11"
+    A%h = B11
   else
     if(POL == 1)then
-      A%h = B"10"
+      A%h = B10
     else
-      A%h = B"01"
+      A%h = B01
     end if
   end if
 
@@ -904,6 +920,7 @@ module ol_h_wavefunctions_/**/REALKIND
 ! - wf_V: vector boson
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND
+  use KIND_TYPES_BW
   implicit none
   private
   public :: wf_S, wf_V, wf_Q, wf_A
@@ -977,7 +994,7 @@ subroutine wf_Q(P, M, POL, Q)
       Q(k:size(POL))%j(2) = 0
       Q(k:size(POL))%j(3) = 0
       Q(k:size(POL))%j(4) = 0
-      Q(k:size(POL))%h = B"00"
+      Q(k:size(POL))%h = B00
       exit
     end if
 
@@ -988,12 +1005,12 @@ subroutine wf_Q(P, M, POL, Q)
     end if
 
     if(M /= 0)then
-      Q(k)%h = B"11"
+      Q(k)%h = B11
     else
       if(POL(k) == 1)then
-        Q(k)%h = B"10"
+        Q(k)%h = B10
       else
-        Q(k)%h = B"01"
+        Q(k)%h = B01
       end if
     end if
 
@@ -1037,7 +1054,7 @@ subroutine pol_wf_Q(P, M, POL, Q, POLSEL)
       Q(k:size(POL))%j(2) = 0
       Q(k:size(POL))%j(3) = 0
       Q(k:size(POL))%j(4) = 0
-      Q(k:size(POL))%h = B"00"
+      Q(k:size(POL))%h = B00
       exit
     end if
 
@@ -1049,7 +1066,7 @@ subroutine pol_wf_Q(P, M, POL, Q, POLSEL)
         Q(k)%j(2) = 0
         Q(k)%j(3) = 0
         Q(k)%j(4) = 0
-        Q(k)%h = B"00"
+        Q(k)%h = B00
         cycle
       end if
     end if
@@ -1061,12 +1078,12 @@ subroutine pol_wf_Q(P, M, POL, Q, POLSEL)
     end if
 
     if(M /= 0)then
-      Q(k)%h = B"11"
+      Q(k)%h = B11
     else
       if(POL(k) == 1)then
-        Q(k)%h = B"10"
+        Q(k)%h = B10
       else
-        Q(k)%h = B"01"
+        Q(k)%h = B01
       end if
     end if
 
@@ -1111,7 +1128,7 @@ subroutine wf_A(P, M, POL, A)
       A(k:size(POL))%j(2) = 0
       A(k:size(POL))%j(3) = 0
       A(k:size(POL))%j(4) = 0
-      A(k:size(POL))%h = B"00"
+      A(k:size(POL))%h = B00
       exit
     end if
 
@@ -1127,12 +1144,12 @@ subroutine wf_A(P, M, POL, A)
     A(k)%j(4) = -conjg(J_AUX(2))
 
     if (M /= 0) then
-      A(k)%h = B"11"
+      A(k)%h = B11
     else
       if (POL(k) == 1) then
-        A(k)%h = B"10"
+        A(k)%h = B10
       else
-        A(k)%h = B"01"
+        A(k)%h = B01
       end if
     end if
 
@@ -1177,7 +1194,7 @@ subroutine pol_wf_A(P, M, POL, A, POLSEL)
       A(k:size(POL))%j(2) = 0
       A(k:size(POL))%j(3) = 0
       A(k:size(POL))%j(4) = 0
-      A(k:size(POL))%h = B"00"
+      A(k:size(POL))%h = B00
       exit
     end if
 
@@ -1189,7 +1206,7 @@ subroutine pol_wf_A(P, M, POL, A, POLSEL)
         A(k)%j(2) = 0
         A(k)%j(3) = 0
         A(k)%j(4) = 0
-        A(k)%h = B"00"
+        A(k)%h = B00
         cycle
       end if
     end if
@@ -1206,12 +1223,12 @@ subroutine pol_wf_A(P, M, POL, A, POLSEL)
     A(k)%j(4) = -conjg(J_AUX(2))
 
     if (M /= 0) then
-      A(k)%h = B"11"
+      A(k)%h = B11
     else
       if (POL(k) == 1) then
-        A(k)%h = B"10"
+        A(k)%h = B10
       else
-        A(k)%h = B"01"
+        A(k)%h = B01
       end if
     end if
 
@@ -1401,6 +1418,7 @@ module ol_hel_wavefunctions_/**/REALKIND
 ! - wf_V: vector boson
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND
+  use KIND_TYPES_BW
   implicit none
   private
   public :: wf_S, wf_V, wf_Q, wf_A
@@ -1485,7 +1503,7 @@ subroutine wf_Q(P, M, POL, Q)
       Q(k:size(POL))%j(2) = 0
       Q(k:size(POL))%j(3) = 0
       Q(k:size(POL))%j(4) = 0
-      Q(k:size(POL))%h = B"00"
+      Q(k:size(POL))%h = B00
       exit
     end if
 
@@ -1496,12 +1514,12 @@ subroutine wf_Q(P, M, POL, Q)
     end if
 
     if(M /= 0)then
-      Q(k)%h = B"11"
+      Q(k)%h = B11
     else
       if(POL(k) == 1)then
-        Q(k)%h = B"10"
+        Q(k)%h = B10
       else
-        Q(k)%h = B"01"
+        Q(k)%h = B01
       end if
     end if
 
@@ -1553,7 +1571,7 @@ subroutine pol_wf_Q(P, M, POL, Q, POLSEL, w_ind)
       Q(k:size(POL))%j(2) = 0
       Q(k:size(POL))%j(3) = 0
       Q(k:size(POL))%j(4) = 0
-      Q(k:size(POL))%h = B"00"
+      Q(k:size(POL))%h = B00
       exit
     end if
 
@@ -1565,7 +1583,7 @@ subroutine pol_wf_Q(P, M, POL, Q, POLSEL, w_ind)
         Q(k)%j(2) = 0
         Q(k)%j(3) = 0
         Q(k)%j(4) = 0
-        Q(k)%h = B"00"
+        Q(k)%h = B00
         cycle
       end if
     end if
@@ -1577,12 +1595,12 @@ subroutine pol_wf_Q(P, M, POL, Q, POLSEL, w_ind)
     end if
 
     if(M /= 0)then
-      Q(k)%h = B"11"
+      Q(k)%h = B11
     else
       if(POL(k) == 1)then
-        Q(k)%h  = B"10"
+        Q(k)%h  = B10
       else
-        Q(k)%h  = B"01"
+        Q(k)%h  = B01
       end if
     end if
 
@@ -1643,7 +1661,7 @@ subroutine wf_A(P, M, POL, A)
       A(k:size(POL))%j(2) = 0
       A(k:size(POL))%j(3) = 0
       A(k:size(POL))%j(4) = 0
-      A(k:size(POL))%h = B"00"
+      A(k:size(POL))%h = B00
       exit
     end if
 
@@ -1659,12 +1677,12 @@ subroutine wf_A(P, M, POL, A)
     A(k)%j(4) = -conjg(J_AUX(2))
 
     if (M /= 0) then
-      A(k)%h = B"11"
+      A(k)%h = B11
     else
       if (POL(k) == 1) then
-        A(k)%h = B"10"
+        A(k)%h = B10
       else
-        A(k)%h = B"01"
+        A(k)%h = B01
       end if
     end if
 
@@ -1716,7 +1734,7 @@ subroutine pol_wf_A(P, M, POL, A, POLSEL,w_ind)
       A(k:size(POL))%j(2) = 0
       A(k:size(POL))%j(3) = 0
       A(k:size(POL))%j(4) = 0
-      A(k:size(POL))%h = B"00"
+      A(k:size(POL))%h = B00
       exit
     end if
 
@@ -1728,7 +1746,7 @@ subroutine pol_wf_A(P, M, POL, A, POLSEL,w_ind)
         A(k)%j(2) = 0
         A(k)%j(3) = 0
         A(k)%j(4) = 0
-        A(k)%h = B"00"
+        A(k)%h = B00
         cycle
       end if
     end if
@@ -1745,12 +1763,12 @@ subroutine pol_wf_A(P, M, POL, A, POLSEL,w_ind)
     A(k)%j(4) = -conjg(J_AUX(2))
 
     if (M /= 0) then
-      A(k)%h = B"11"
+      A(k)%h = B11
     else
       if (POL(k) == 1) then
-        A(k)%h = B"10"
+        A(k)%h = B10
       else
-        A(k)%h = B"01"
+        A(k)%h = B01
       end if
     end if
 
@@ -1952,7 +1970,7 @@ subroutine sort_hf_wf(wf)
 
   ntot = 0
   wf_aux(:)%hf = -1_intkind2
-  wf_aux(:)%h = B"00"
+  wf_aux(:)%h = B00
   wf_aux(:)%t = wf(:)%t
   wf_aux(:)%n_part = wf(:)%n_part
   wf_aux(:)%e = wf(:)%e

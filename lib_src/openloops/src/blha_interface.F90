@@ -557,14 +557,14 @@ module openloops_blha
               flags%AmplitudeType = 1
             case ("cctree")
               lineout = trim(line) // "      | OK"
-              flags%AmplitudeType = 11
+              flags%AmplitudeType = 2
             case ("sctree")
               lineout = trim(line) // "      | Error: not implemented; use sctree_polvect instead"
               flags%AmplitudeType = 3
               ierr = 0
             case ("sctree_polvect")
               lineout = trim(line) // "      | OK"
-              flags%AmplitudeType = 11
+              flags%AmplitudeType = 4
             case ("loop")
               lineout = trim(line) // "      | OK"
               flags%AmplitudeType = 11
@@ -602,7 +602,7 @@ module openloops_blha
           else if (trim(to_lowercase(val)) == "gmu" ) then
             lineout = trim(line) // "      | OK"
             call set_parameter("ew_scheme", 1)
-          else if (trim(to_lowercase(val)) == "alphaMZ" ) then
+          else if (trim(to_lowercase(val)) == "alphamz" ) then
             lineout = trim(line) // "      | OK"
             call set_parameter("ew_scheme", 2)
           else

@@ -278,17 +278,18 @@ function cont_QA(Q, A)
 ! X%h    =    B"00"          B"01"         B"10"          B"11"
 !************************************************************************
   use KIND_TYPES, only: REALKIND
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND
   implicit none
   complex(REALKIND) :: cont_QA
   type(wfun), intent(in)  :: Q, A
 
   select case (iand(Q%h,A%h))
-  case(B"01")
+  case(B01)
     cont_QA = Q%j(3)*A%j(3) + Q%j(4)*A%j(4)
-  case(B"10")
+  case(B10)
     cont_QA = Q%j(1)*A%j(1) + Q%j(2)*A%j(2)
-  case(B"00")
+  case(B00)
     cont_QA = 0
   case default
     cont_QA = Q%j(1)*A%j(1) + Q%j(2)*A%j(2) + Q%j(3)*A%j(3) + Q%j(4)*A%j(4)
@@ -435,6 +436,7 @@ subroutine cont_QA(nsync, Q, A, cont, n, t, nhel, den)
 ! cont(1:nhel)   = contractions
 !************************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND
   use ol_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_cont
   implicit none
@@ -451,13 +453,13 @@ subroutine cont_QA(nsync, Q, A, cont, n, t, nhel, den)
       cont(h)%j = 0
     else
     select case (iand(Q(t(1,h))%h,A(t(2,h))%h))
-    case(B"01")
+    case(B01)
       cont(h)%j = Q(t(1,h))%j(3)*A(t(2,h))%j(3) + Q(t(1,h))%j(4)*A(t(2,h))%j(4)
       cont(h)%j = cont(h)%j * den
-    case(B"10")
+    case(B10)
       cont(h)%j = Q(t(1,h))%j(1)*A(t(2,h))%j(1) + Q(t(1,h))%j(2)*A(t(2,h))%j(2)
       cont(h)%j = cont(h)%j * den
-    case(B"00")
+    case(B00)
       cont(h)%j = 0
     case default
       cont(h)%j = Q(t(1,h))%j(1)*A(t(2,h))%j(1) + Q(t(1,h))%j(2)*A(t(2,h))%j(2) &

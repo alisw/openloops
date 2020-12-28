@@ -58,6 +58,7 @@ subroutine counter_Q_A_pid(ctQA, pid, ntry, J_Q, mom, Jout_Q, n)
 ! Q -> Q counter term without left/right splitting
 ! **********************************************************************
   use KIND_TYPES, only: DREALKIND,REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_prop
   use ol_qcd_offshell_selfenergies/**/REALKIND, only: quark_ofsse
@@ -103,7 +104,7 @@ subroutine counter_Q_A_pid(ctQA, pid, ntry, J_Q, mom, Jout_Q, n)
       Jout_Q(h)%j(3) = (ctQA(1)+GG(1)) * K(5) *J_Q(h)%j_prev(3) - (ctQA(2)+GG(2)) * J_Q(h)%j(3)
       Jout_Q(h)%j(4) = (ctQA(1)+GG(1)) * K(5) *J_Q(h)%j_prev(4) - (ctQA(2)+GG(2)) * J_Q(h)%j(4)
 
-      Jout_Q(h)%h = B"11" ! default value for the label h
+      Jout_Q(h)%h = B11 ! default value for the label h
 
       deallocate(J_Q(h)%j_prev)
     end do
@@ -115,7 +116,7 @@ subroutine counter_Q_A_pid(ctQA, pid, ntry, J_Q, mom, Jout_Q, n)
       Jout_Q(h)%j(3) = (ctQA(1)+GG(1)) * ( - K(1)*J_Q(h)%j(1) - K(4)*J_Q(h)%j(2)) - (ctQA(2)+GG(2)) * J_Q(h)%j(3)
       Jout_Q(h)%j(4) = (ctQA(1)+GG(1)) * ( - K(2)*J_Q(h)%j(2) - K(3)*J_Q(h)%j(1)) - (ctQA(2)+GG(2)) * J_Q(h)%j(4)
 
-      Jout_Q(h)%h = B"11" ! default value for the label h
+      Jout_Q(h)%h = B11 ! default value for the label h
 
     end do
   end if
@@ -153,6 +154,7 @@ subroutine counter_A_Q_pid(ctQA, pid, ntry, J_A, mom, Jout_A, n)
 ! A -> A counter term without left/right splitting
 ! **********************************************************************
   use KIND_TYPES, only: DREALKIND, REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_prop
   use ol_qcd_offshell_selfenergies/**/REALKIND, only: quark_ofsse
@@ -197,7 +199,7 @@ subroutine counter_A_Q_pid(ctQA, pid, ntry, J_A, mom, Jout_A, n)
       Jout_A(h)%j(3) = (ctQA(1) + GG(1))*K(5) * J_A(h)%j_prev(3) - (ctQA(2)+GG(2)) * J_A(h)%j(3)
       Jout_A(h)%j(4) = (ctQA(1) + GG(1))*K(5) * J_A(h)%j_prev(4) - (ctQA(2)+GG(2)) * J_A(h)%j(4)
 
-      Jout_A(h)%h = B"11" ! default value for the label h
+      Jout_A(h)%h = B11 ! default value for the label h
 
       deallocate(J_A(h)%j_prev)
     end do
@@ -209,7 +211,7 @@ subroutine counter_A_Q_pid(ctQA, pid, ntry, J_A, mom, Jout_A, n)
       Jout_A(h)%j(3) = (ctQA(1) + GG(1)) * ( + K(2)*J_A(h)%j(1) - K(3)*J_A(h)%j(2)) - (ctQA(2)+GG(2)) * J_A(h)%j(3)
       Jout_A(h)%j(4) = (ctQA(1) + GG(1)) * ( + K(1)*J_A(h)%j(2) - K(4)*J_A(h)%j(1)) - (ctQA(2)+GG(2)) * J_A(h)%j(4)
 
-      Jout_A(h)%h = B"11" ! default value for the label h
+      Jout_A(h)%h = B11 ! default value for the label h
 
     end do
   end if
@@ -229,6 +231,7 @@ subroutine counter_Q_A_LR(ctQA, ntry, J_Q, mom, Jout_Q, n)
 ! ctQA(1)*slash(k)*P_R+ctQA(2)*slash(k)*P_L - ctQA(3) P_R - ctQA(4) P_L
 !************************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_prop
   use ol_kinematics_/**/REALKIND, only: get_LC_4
@@ -250,7 +253,7 @@ subroutine counter_Q_A_LR(ctQA, ntry, J_Q, mom, Jout_Q, n)
     Jout_Q(h)%j(3) = ctQA(1) * ( - K(1)*J_Q(h)%j(1) - K(4)*J_Q(h)%j(2)) - ctQA(4) * J_Q(h)%j(3)
     Jout_Q(h)%j(4) = ctQA(1) * ( - K(2)*J_Q(h)%j(2) - K(3)*J_Q(h)%j(1)) - ctQA(4) * J_Q(h)%j(4)
 
-    Jout_Q(h)%h = B"11" ! default value for the label h
+    Jout_Q(h)%h = B11 ! default value for the label h
   end do
 
   if (ntry == 1) then
@@ -268,6 +271,7 @@ subroutine counter_A_Q_LR(ctQA, ntry, J_A, mom, Jout_A, n)
 ! ctQA(1)*slash(k)*P_R+ctQA(2)*slash(k)*P_L - ctQA(3) P_R - ctQA(4) P_L
 !************************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_prop
   use ol_kinematics_/**/REALKIND, only: get_LC_4
@@ -289,7 +293,7 @@ subroutine counter_A_Q_LR(ctQA, ntry, J_A, mom, Jout_A, n)
     Jout_A(h)%j(3) = ctQA(2) * ( + K(2)*J_A(h)%j(1) - K(3)*J_A(h)%j(2)) - ctQA(4) * J_A(h)%j(3)
     Jout_A(h)%j(4) = ctQA(2) * ( + K(1)*J_A(h)%j(2) - K(4)*J_A(h)%j(1)) - ctQA(4) * J_A(h)%j(4)
 
-    Jout_A(h)%h = B"11" ! default value for the label h
+    Jout_A(h)%h = B11 ! default value for the label h
   end do
 
   if (ntry == 1) then
@@ -495,6 +499,7 @@ subroutine counter_VQ_A(ntry, J_V, J_Q, Jout_Q, n, t)
 ! Factorised wrt. vert_VQ_A: ctQAV = gQCD*dlnG + dZf + 1/2 * dZg
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -513,7 +518,7 @@ subroutine counter_VQ_A(ntry, J_V, J_Q, Jout_Q, n, t)
     Jout_Q(h)%j(3) = - J_V(t(1,h))%j(1)*J_Q(t(2,h))%j(1) - J_V(t(1,h))%j(4)*J_Q(t(2,h))%j(2)
     Jout_Q(h)%j(4) = - J_V(t(1,h))%j(2)*J_Q(t(2,h))%j(2) - J_V(t(1,h))%j(3)*J_Q(t(2,h))%j(1)
 
-    Jout_Q(h)%h = B"11" ! default value for the label h
+    Jout_Q(h)%h = B11 ! default value for the label h
 
   end do
 
@@ -532,6 +537,7 @@ subroutine counter_AV_Q(ntry, J_A, J_V, Jout_A, n, t)
 ! Factorised wrt. vert_AV_Q: ctQAV = gQCD*dlnG + dZf + 1/2 * dZg
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -548,7 +554,7 @@ subroutine counter_AV_Q(ntry, J_A, J_V, Jout_A, n, t)
     Jout_A(h)%j(3) = - J_V(t(2,h))%j(2)*J_A(t(1,h))%j(1) + J_V(t(2,h))%j(3)*J_A(t(1,h))%j(2)
     Jout_A(h)%j(4) = - J_V(t(2,h))%j(1)*J_A(t(1,h))%j(2) + J_V(t(2,h))%j(4)*J_A(t(1,h))%j(1)
 
-    Jout_A(h)%h = B"11" ! default value for the label h
+    Jout_A(h)%h = B11 ! default value for the label h
 
   end do
 
@@ -569,6 +575,7 @@ subroutine counter_QA_V(ntry, J_Q, J_A, Jout_V, n, t)
 ! Factorised wrt. vert_QA_V: ctQAV = gQCD*dlnG + dZf + 1/2 * dZg
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -586,7 +593,7 @@ subroutine counter_QA_V(ntry, J_Q, J_A, Jout_V, n, t)
     Jout_V(h)%j(4) = - J_A(t(2,h))%j(2)*J_Q(t(1,h))%j(3) + J_A(t(2,h))%j(4)*J_Q(t(1,h))%j(1)
     Jout_V(h)%j(:) = Jout_V(h)%j(:) + Jout_V(h)%j(:)
 
-    Jout_V(h)%h = B"11" ! default value for the label h
+    Jout_V(h)%h = B11 ! default value for the label h
 
   end do
 
@@ -612,6 +619,7 @@ subroutine counter_QA_Z(g_RL, ntry, J_Q, J_A, Jout_Z, n, t)
 ! Jout_Z(A) = J_A(i) * [gamma^A*(gR*w_R+gL*w_L)](i,j) * J_Q(j)
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -638,7 +646,7 @@ subroutine counter_QA_Z(g_RL, ntry, J_Q, J_A, Jout_Z, n, t)
 
     Jout_Z(h)%j(:) = Jout_Z(h)%j(:) + Jout_Z(h)%j(:)
 
-    Jout_Z(h)%h = B"11" ! default value for the label h
+    Jout_Z(h)%h = B11 ! default value for the label h
   end do
 
   if (ntry == 1) then
@@ -663,6 +671,7 @@ subroutine counter_AZ_Q(g_RL, ntry, J_A, J_Z, Jout_A, n, t)
 ! Jout_A(i)  = J_A(j) * [gamma_A*(gR*w_R+gL*w_L)](j,i) * J_Z(A)
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -682,7 +691,7 @@ subroutine counter_AZ_Q(g_RL, ntry, J_A, J_Z, Jout_A, n, t)
     Jout_A(h)%j(3) = g_RL(2) * ( - J_Z(h2)%j(2)*J_A(h1)%j(1) + J_Z(h2)%j(3)*J_A(h1)%j(2))
     Jout_A(h)%j(4) = g_RL(2) * ( - J_Z(h2)%j(1)*J_A(h1)%j(2) + J_Z(h2)%j(4)*J_A(h1)%j(1))
 
-    Jout_A(h)%h = B"11" ! default value for the label h
+    Jout_A(h)%h = B11 ! default value for the label h
   end do
 
   if (ntry == 1) then
@@ -707,6 +716,7 @@ subroutine counter_ZQ_A(g_RL, ntry, J_Z, J_Q, Jout_Q, n, t)
 ! Jout_Q(i)  = J_Z(A)*[gamma_A*(gR*w_R+gL*w_L)](i,j)*J_Q(j)
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -726,7 +736,7 @@ subroutine counter_ZQ_A(g_RL, ntry, J_Z, J_Q, Jout_Q, n, t)
     Jout_Q(h)%j(3) = g_RL(1) * ( - J_Z(h1)%j(1)*J_Q(h2)%j(1) - J_Z(h1)%j(4)*J_Q(h2)%j(2))
     Jout_Q(h)%j(4) = g_RL(1) * ( - J_Z(h1)%j(2)*J_Q(h2)%j(2) - J_Z(h1)%j(3)*J_Q(h2)%j(1))
 
-    Jout_Q(h)%h = B"11" ! default value for the label h
+    Jout_Q(h)%h = B11 ! default value for the label h
 
   end do
 
@@ -823,6 +833,7 @@ subroutine counter_AW_Q(ntry, J_A, J_W, Jout_A, n, t)
 ! Jout_A(:) = J_A(j) * [gamma_A*w_L](j,i) * J_W(A)
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -837,7 +848,7 @@ subroutine counter_AW_Q(ntry, J_A, J_W, Jout_A, n, t)
     Jout_A(h)%j(3)= - J_W(t(2,h))%j(2)*J_A(t(1,h))%j(1) + J_W(t(2,h))%j(3)*J_A(t(1,h))%j(2)
     Jout_A(h)%j(4)= - J_W(t(2,h))%j(1)*J_A(t(1,h))%j(2) + J_W(t(2,h))%j(4)*J_A(t(1,h))%j(1)
 
-    Jout_A(h)%h = B"11" ! default value for the label h
+    Jout_A(h)%h = B11 ! default value for the label h
 
   end do
 
@@ -861,6 +872,7 @@ subroutine counter_WQ_A(ntry, J_W, J_Q, Jout_Q, n, t)
 ! Jout_Q(:) = J_W(A) * [gamma_A*w_L](i,j) * J_Q(j)
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -875,7 +887,7 @@ subroutine counter_WQ_A(ntry, J_W, J_Q, Jout_Q, n, t)
     Jout_Q(h)%j(2)= - J_W(t(1,h))%j(1)*J_Q(t(2,h))%j(4) + J_W(t(1,h))%j(3)*J_Q(t(2,h))%j(3)
     Jout_Q(h)%j(3:4) = 0
 
-    Jout_Q(h)%h = B"11" ! default value for the label h
+    Jout_Q(h)%h = B11 ! default value for the label h
 
   end do
 
@@ -899,6 +911,7 @@ subroutine counter_QA_W(ntry, J_Q, J_A, Jout_W, n, t)
 ! Jout_Q(:) = J_W(A) * [gamma_A*w_L](i,j) * J_Q(j)
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -917,7 +930,7 @@ subroutine counter_QA_W(ntry, J_Q, J_A, Jout_W, n, t)
     Jout_W(h)%j(4) = - J_A(h2)%j(2)*J_Q(h1)%j(3)
     Jout_W(h)%j = Jout_W(h)%j + Jout_W(h)%j
 
-    Jout_W(h)%h = B"11" ! default value for the label h
+    Jout_W(h)%h = B11 ! default value for the label h
 
   end do
 
@@ -1272,6 +1285,7 @@ subroutine counter_QS_A(g_RL, ntry, J_Q, J_S, Jout_A, n, t)
 ! Outgoing anti-fermion current: Jout_A(4)
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -1286,7 +1300,7 @@ subroutine counter_QS_A(g_RL, ntry, J_Q, J_S, Jout_A, n, t)
     Jout_A(h)%j(1:2) = g_RL(1) * J_S(t(2,h))%j(1) * J_Q(t(1,h))%j(1:2)
     Jout_A(h)%j(3:4) = g_RL(2) * J_S(t(2,h))%j(1) * J_Q(t(1,h))%j(3:4)
 
-    Jout_A(h)%h = B"11"
+    Jout_A(h)%h = B11
   end do
 
   if (ntry == 1) then
@@ -1347,6 +1361,7 @@ subroutine counter_SA_Q(g_RL, ntry, J_S, J_A, Jout_Q, n, t)
 ! Outgoing fermion current:      Jout_Q
 ! **********************************************************************
   use KIND_TYPES, only: REALKIND, intkind1, intkind2
+  use KIND_TYPES_BW
   use ol_data_types_/**/REALKIND, only: wfun
   use ol_h_helicity_bookkeeping_/**/REALKIND, only: helbookkeeping_vert3
   implicit none
@@ -1361,7 +1376,7 @@ subroutine counter_SA_Q(g_RL, ntry, J_S, J_A, Jout_Q, n, t)
     Jout_Q(h)%j(1:2) = g_RL(1) * J_S(t(1,h))%j(1) * J_A(t(2,h))%j(1:2)
     Jout_Q(h)%j(3:4) = g_RL(2) * J_S(t(1,h))%j(1) * J_A(t(2,h))%j(3:4)
 
-    Jout_Q(h)%h = B"11"
+    Jout_Q(h)%h = B11
   end do
 
   if (ntry == 1) then

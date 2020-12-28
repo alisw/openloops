@@ -2919,7 +2919,13 @@ subroutine collier_scalars_interface(momenta, masses2, Gsum, M2add, loss)
   case (4)
     call D_cll(sc_int, UV_part, collier_invariants(int_mom), masses2, 0, Derr=sc_err)
   end select
-  if (present(loss)) loss = max(0.,15.+log10(abs(sc_err(1)/real(sc_int(1)))))
+  if (present(loss)) then
+    if (real(sc_int(1)) == 0) then
+      loss = 0.
+    else
+      loss = max(0.,15.+log10(abs(sc_err(1)/real(sc_int(1)))))
+    end if
+  end if
   M2add = Gsum(1)*sc_int(1)
 #else
   call ol_error("COLLIER library not compiled")

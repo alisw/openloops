@@ -420,10 +420,10 @@ subroutine intdip_Fjk(j,k,Tjk,flavj,M2j,M2k,Q2_aux,Fjk)
   ! non-singular part of nu_j function for photons
   else if (flavj == -1) then ! EMITTER j=PHOTON
     ! singular-part vanishing for photons
-    Fjk = 0
+    Fjk = 0._/**/REALKIND
     ! Gaj = [1/1] - 2/3*sum(Ncf*Qf2)
-    Gaj = 0
-    if (SwF /= 0) Gaj = Gaj - 2./3.*Qf2sum
+    Gaj = 0._/**/REALKIND
+    if (SwF /= 0) Gaj = Gaj - 2._/**/REALKIND/3.*Qf2sum
     if (M2k == 0) then ! eq. (6.26)
       Nuj_nonsing = 0._/**/REALKIND ! ~ tf/ca
     else if (M2k > 0) then ! eq. (6.24) in N_f=5 scheme

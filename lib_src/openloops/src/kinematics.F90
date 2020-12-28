@@ -536,7 +536,7 @@ subroutine decay3(E_in, m, psp)
   ! Random phase space point for a 1->2 decay with energy E_in.
   ! Set up the decay in the centre of mass system, then apply a Lorentz boost.
   ! Note that the points will not be uniformly distributed if E_in /= m(1).
-  use ol_parameters_decl_/**/REALKIND, only: psp_tolerance
+  use ol_parameters_decl_/**/DREALKIND, only: psp_tolerance
   use ol_debug, only: ol_error, ol_msg, ol_fatal
   implicit none
   real(REALKIND), intent(in) :: E_in, m(3)
@@ -672,7 +672,7 @@ subroutine rambo_decay(sqrt_s, m_ex, p_rambo)
 ! *********************************************************************
   use KIND_TYPES, only: REALKIND
   use ol_debug, only: ol_fatal, ol_msg
-  use ol_parameters_decl_/**/REALKIND, only: psp_tolerance
+  use ol_parameters_decl_/**/DREALKIND, only: psp_tolerance
   use ol_ramboX, only: rambo0 => rambo
   implicit none
   real(REALKIND), intent(in)  :: sqrt_s, m_ex(:)
@@ -768,7 +768,7 @@ subroutine clean_mom_in(P_in, m_ext2, P, n)
   use KIND_TYPES, only: REALKIND
   use ol_debug, only: ol_msg
   use ol_generic, only: to_string
-  use ol_parameters_decl_/**/REALKIND, only: psp_tolerance
+  use ol_parameters_decl_/**/DREALKIND, only: psp_tolerance
   implicit none
   real(REALKIND), intent(in)  :: P_in(0:3,n)
   integer,        intent(in)  :: n

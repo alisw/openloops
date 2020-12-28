@@ -19,6 +19,7 @@
 
 
 module ol_hel_vertices_/**/REALKIND
+  use KIND_TYPES_BW
   implicit none
   contains
 
@@ -49,28 +50,28 @@ subroutine vert_ZQ_A(g_RL, ntry, Z, Q, Q_out, n, t)
   do h = 1, n(3)
     select case (Q(t(2,h))%h)
 
-    case (B"01")
+    case (B01)
       Q_out(h)%j(1) = g_RL(2) * ( - Z(t(1,h))%j(2)*Q(t(2,h))%j(3) + Z(t(1,h))%j(4)*Q(t(2,h))%j(4))
       Q_out(h)%j(2) = g_RL(2) * ( - Z(t(1,h))%j(1)*Q(t(2,h))%j(4) + Z(t(1,h))%j(3)*Q(t(2,h))%j(3))
       Q_out(h)%j(3:4) = 0
-      Q_out(h)%h    = B"10"
+      Q_out(h)%h    = B10
 
-    case (B"10")
+    case (B10)
       Q_out(h)%j(1:2) = 0
       Q_out(h)%j(3) = g_RL(1) * ( - Z(t(1,h))%j(1)*Q(t(2,h))%j(1) - Z(t(1,h))%j(4)*Q(t(2,h))%j(2))
       Q_out(h)%j(4) = g_RL(1) * ( - Z(t(1,h))%j(2)*Q(t(2,h))%j(2) - Z(t(1,h))%j(3)*Q(t(2,h))%j(1))
-      Q_out(h)%h    = B"01"
+      Q_out(h)%h    = B01
 
-    case (B"00")
+    case (B00)
       Q_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-      Q_out(h)%h = B"00"
+      Q_out(h)%h = B00
 
     case default
       Q_out(h)%j(1) = g_RL(2) * ( - Z(t(1,h))%j(2)*Q(t(2,h))%j(3) + Z(t(1,h))%j(4)*Q(t(2,h))%j(4))
       Q_out(h)%j(2) = g_RL(2) * ( - Z(t(1,h))%j(1)*Q(t(2,h))%j(4) + Z(t(1,h))%j(3)*Q(t(2,h))%j(3))
       Q_out(h)%j(3) = g_RL(1) * ( - Z(t(1,h))%j(1)*Q(t(2,h))%j(1) - Z(t(1,h))%j(4)*Q(t(2,h))%j(2))
       Q_out(h)%j(4) = g_RL(1) * ( - Z(t(1,h))%j(2)*Q(t(2,h))%j(2) - Z(t(1,h))%j(3)*Q(t(2,h))%j(1))
-      Q_out(h)%h    = B"11"
+      Q_out(h)%h    = B11
 
     end select
   end do
@@ -116,28 +117,28 @@ subroutine vert_AZ_Q(g_RL, ntry, A, Z, A_out, n, t)
   do h = 1, n(3)
     select case (A(t(1,h))%h)
 
-    case (B"01")
+    case (B01)
       A_out(h)%j(1) = g_RL(1) * ( - Z(t(2,h))%j(1)*A(t(1,h))%j(3) - Z(t(2,h))%j(3)*A(t(1,h))%j(4))
       A_out(h)%j(2) = g_RL(1) * ( - Z(t(2,h))%j(2)*A(t(1,h))%j(4) - Z(t(2,h))%j(4)*A(t(1,h))%j(3))
       A_out(h)%j(3:4) = 0
-      A_out(h)%h    = B"10"
+      A_out(h)%h    = B10
 
-    case (B"10")
+    case (B10)
       A_out(h)%j(1:2) = 0
       A_out(h)%j(3) = g_RL(2) * ( - Z(t(2,h))%j(2)*A(t(1,h))%j(1) + Z(t(2,h))%j(3)*A(t(1,h))%j(2))
       A_out(h)%j(4) = g_RL(2) * ( - Z(t(2,h))%j(1)*A(t(1,h))%j(2) + Z(t(2,h))%j(4)*A(t(1,h))%j(1))
-      A_out(h)%h    = B"01"
+      A_out(h)%h    = B01
 
-    case (B"00")
+    case (B00)
       A_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-      A_out(h)%h = B"00"
+      A_out(h)%h = B00
 
     case default
       A_out(h)%j(1) = g_RL(1) * ( - Z(t(2,h))%j(1)*A(t(1,h))%j(3) - Z(t(2,h))%j(3)*A(t(1,h))%j(4))
       A_out(h)%j(2) = g_RL(1) * ( - Z(t(2,h))%j(2)*A(t(1,h))%j(4) - Z(t(2,h))%j(4)*A(t(1,h))%j(3))
       A_out(h)%j(3) = g_RL(2) * ( - Z(t(2,h))%j(2)*A(t(1,h))%j(1) + Z(t(2,h))%j(3)*A(t(1,h))%j(2))
       A_out(h)%j(4) = g_RL(2) * ( - Z(t(2,h))%j(1)*A(t(1,h))%j(2) + Z(t(2,h))%j(4)*A(t(1,h))%j(1))
-      A_out(h)%h    = B"11"
+      A_out(h)%h    = B11
 
     end select
   end do
@@ -185,7 +186,7 @@ subroutine vert_QA_Z(g_RL, ntry, Q, A, Z_out, n, t)
   do h = 1, n(3)
     select case (ishft(Q(t(1,h))%h,2) + A(t(2,h))%h)
 
-    case (B"1111")
+    case (B1111)
       A_aux(1:2)    = g_RL(2)*A(t(2,h))%j(1:2)
       A_aux(3:4)    = g_RL(1)*A(t(2,h))%j(3:4)
       Z_out(h)%j(1) = - A_aux(1)*Q(t(1,h))%j(3) - A_aux(4)*Q(t(1,h))%j(2)
@@ -194,7 +195,7 @@ subroutine vert_QA_Z(g_RL, ntry, Q, A, Z_out, n, t)
       Z_out(h)%j(4) = - A_aux(2)*Q(t(1,h))%j(3) + A_aux(4)*Q(t(1,h))%j(1)
       Z_out(h)%j    =  Z_out(h)%j + Z_out(h)%j
 
-    case (B"0110", B"0111", B"1110")
+    case (B0110, B0111, B1110)
       A_aux(1:2)    = g_RL(2)*A(t(2,h))%j(1:2)
       Z_out(h)%j(1) = - A_aux(1)*Q(t(1,h))%j(3)
       Z_out(h)%j(2) = - A_aux(2)*Q(t(1,h))%j(4)
@@ -202,7 +203,7 @@ subroutine vert_QA_Z(g_RL, ntry, Q, A, Z_out, n, t)
       Z_out(h)%j(4) = - A_aux(2)*Q(t(1,h))%j(3)
       Z_out(h)%j    =  Z_out(h)%j + Z_out(h)%j
 
-    case (B"1001", B"1101", B"1011")
+    case (B1001, B1101, B1011)
       A_aux(3:4)    = g_RL(1)*A(t(2,h))%j(3:4)
       Z_out(h)%j(1) = - A_aux(4)*Q(t(1,h))%j(2)
       Z_out(h)%j(2) = - A_aux(3)*Q(t(1,h))%j(1)
@@ -255,15 +256,15 @@ subroutine vert_WQ_A(ntry, W, Q, Q_out, n, t)
   do h = 1, n(3)
     select case (Q(t(2,h))%h)
 
-    case (B"01", B"11")
+    case (B01, B11)
     Q_out(h)%j(1) = - W(t(1,h))%j(2)*Q(t(2,h))%j(3) + W(t(1,h))%j(4)*Q(t(2,h))%j(4)
     Q_out(h)%j(2) = - W(t(1,h))%j(1)*Q(t(2,h))%j(4) + W(t(1,h))%j(3)*Q(t(2,h))%j(3)
     Q_out(h)%j(3:4) = 0
-    Q_out(h)%h    = B"10"
+    Q_out(h)%h    = B10
 
     case default
     Q_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-    Q_out(h)%h = B"00"
+    Q_out(h)%h = B00
 
     end select
   end do
@@ -307,15 +308,15 @@ subroutine vert_AW_Q(ntry, A, W, A_out, n, t)
   do h = 1, n(3)
     select case (A(t(1,h))%h)
 
-    case (B"10", B"11")
+    case (B10, B11)
       A_out(h)%j(1:2) = 0
       A_out(h)%j(3) = - W(t(2,h))%j(2)*A(t(1,h))%j(1) + W(t(2,h))%j(3)*A(t(1,h))%j(2)
       A_out(h)%j(4) = - W(t(2,h))%j(1)*A(t(1,h))%j(2) + W(t(2,h))%j(4)*A(t(1,h))%j(1)
-      A_out(h)%h    = B"01"
+      A_out(h)%h    = B01
 
     case default
       A_out(h)%j = 0  ! needed to detect vanishing helicity configurations
-      A_out(h)%h = B"00"
+      A_out(h)%h = B00
 
     end select
   end do
@@ -359,7 +360,7 @@ subroutine vert_QA_W(ntry, Q, A, W_out, n, t)
   do h = 1, n(3)
     select case (ishft(Q(t(1,h))%h,2) + A(t(2,h))%h)
 
-    case (B"1111", B"1110", B"0111", B"0110")
+    case (B1111, B1110, B0111, B0110)
       W_out(h)%j(1) = - A(t(2,h))%j(1)*Q(t(1,h))%j(3)
       W_out(h)%j(2) = - A(t(2,h))%j(2)*Q(t(1,h))%j(4)
       W_out(h)%j(3) = - A(t(2,h))%j(1)*Q(t(1,h))%j(4)
@@ -412,28 +413,28 @@ subroutine vert_VQ_A(ntry, V, Q, Q_out, n, t)
 
     select case (Q(t(2,h))%h)
 
-    case (B"01")
+    case (B01)
       Q_out(h)%j(1) = - V(t(1,h))%j(2)*Q(t(2,h))%j(3)+V(t(1,h))%j(4)*Q(t(2,h))%j(4)
       Q_out(h)%j(2) = - V(t(1,h))%j(1)*Q(t(2,h))%j(4)+V(t(1,h))%j(3)*Q(t(2,h))%j(3)
       Q_out(h)%j(3:4) = 0
-      Q_out(h)%h    = B"10"
+      Q_out(h)%h    = B10
 
-    case (B"10")
+    case (B10)
       Q_out(h)%j(1:2) = 0
       Q_out(h)%j(3) = - V(t(1,h))%j(1)*Q(t(2,h))%j(1)-V(t(1,h))%j(4)*Q(t(2,h))%j(2)
       Q_out(h)%j(4) = - V(t(1,h))%j(2)*Q(t(2,h))%j(2)-V(t(1,h))%j(3)*Q(t(2,h))%j(1)
-      Q_out(h)%h    = B"01"
+      Q_out(h)%h    = B01
 
-    case (B"00")
+    case (B00)
       Q_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-      Q_out(h)%h = B"00"
+      Q_out(h)%h = B00
 
     case default
       Q_out(h)%j(1) = - V(t(1,h))%j(2)*Q(t(2,h))%j(3)+V(t(1,h))%j(4)*Q(t(2,h))%j(4)
       Q_out(h)%j(2) = - V(t(1,h))%j(1)*Q(t(2,h))%j(4)+V(t(1,h))%j(3)*Q(t(2,h))%j(3)
       Q_out(h)%j(3) = - V(t(1,h))%j(1)*Q(t(2,h))%j(1)-V(t(1,h))%j(4)*Q(t(2,h))%j(2)
       Q_out(h)%j(4) = - V(t(1,h))%j(2)*Q(t(2,h))%j(2)-V(t(1,h))%j(3)*Q(t(2,h))%j(1)
-      Q_out(h)%h    = B"11"
+      Q_out(h)%h    = B11
 
     end select
   end do
@@ -478,28 +479,28 @@ subroutine vert_AV_Q(ntry, A, V, A_out, n, t)
 
     select case (A(t(1,h))%h)
 
-    case (B"01")
+    case (B01)
       A_out(h)%j(1) = - V(t(2,h))%j(1)*A(t(1,h))%j(3) - V(t(2,h))%j(3)*A(t(1,h))%j(4)
       A_out(h)%j(2) = - V(t(2,h))%j(2)*A(t(1,h))%j(4) - V(t(2,h))%j(4)*A(t(1,h))%j(3)
       A_out(h)%j(3:4) = 0
-      A_out(h)%h    = B"10"
+      A_out(h)%h    = B10
 
-    case (B"10")
+    case (B10)
       A_out(h)%j(1:2) = 0
       A_out(h)%j(3) = - V(t(2,h))%j(2)*A(t(1,h))%j(1) + V(t(2,h))%j(3)*A(t(1,h))%j(2)
       A_out(h)%j(4) = - V(t(2,h))%j(1)*A(t(1,h))%j(2) + V(t(2,h))%j(4)*A(t(1,h))%j(1)
-      A_out(h)%h    = B"01"
+      A_out(h)%h    = B01
 
-    case (B"00")
+    case (B00)
       A_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-      A_out(h)%h = B"00"
+      A_out(h)%h = B00
 
     case default
       A_out(h)%j(1) = - V(t(2,h))%j(1)*A(t(1,h))%j(3) - V(t(2,h))%j(3)*A(t(1,h))%j(4)
       A_out(h)%j(2) = - V(t(2,h))%j(2)*A(t(1,h))%j(4) - V(t(2,h))%j(4)*A(t(1,h))%j(3)
       A_out(h)%j(3) = - V(t(2,h))%j(2)*A(t(1,h))%j(1) + V(t(2,h))%j(3)*A(t(1,h))%j(2)
       A_out(h)%j(4) = - V(t(2,h))%j(1)*A(t(1,h))%j(2) + V(t(2,h))%j(4)*A(t(1,h))%j(1)
-      A_out(h)%h    = B"11"
+      A_out(h)%h    = B11
 
     end select
   end do
@@ -542,21 +543,21 @@ subroutine vert_QA_V(ntry, Q, A, V_out, n, t)
   do h = 1, n(3)
     select case (ishft(Q(t(1,h))%h,2) + A(t(2,h))%h)
 
-    case (B"1111")
+    case (B1111)
       V_out(h)%j(1) = - A(t(2,h))%j(1)*Q(t(1,h))%j(3) - A(t(2,h))%j(4)*Q(t(1,h))%j(2)
       V_out(h)%j(2) = - A(t(2,h))%j(2)*Q(t(1,h))%j(4) - A(t(2,h))%j(3)*Q(t(1,h))%j(1)
       V_out(h)%j(3) = - A(t(2,h))%j(1)*Q(t(1,h))%j(4) + A(t(2,h))%j(3)*Q(t(1,h))%j(2)
       V_out(h)%j(4) = - A(t(2,h))%j(2)*Q(t(1,h))%j(3) + A(t(2,h))%j(4)*Q(t(1,h))%j(1)
       V_out(h)%j = V_out(h)%j + V_out(h)%j
 
-    case (B"0110", B"0111", B"1110")
+    case (B0110, B0111, B1110)
       V_out(h)%j(1) = - A(t(2,h))%j(1)*Q(t(1,h))%j(3)
       V_out(h)%j(2) = - A(t(2,h))%j(2)*Q(t(1,h))%j(4)
       V_out(h)%j(3) = - A(t(2,h))%j(1)*Q(t(1,h))%j(4)
       V_out(h)%j(4) = - A(t(2,h))%j(2)*Q(t(1,h))%j(3)
       V_out(h)%j = V_out(h)%j + V_out(h)%j
 
-    case (B"1001", B"1101", B"1011")
+    case (B1001, B1101, B1011)
       V_out(h)%j(1) = - A(t(2,h))%j(4)*Q(t(1,h))%j(2)
       V_out(h)%j(2) = - A(t(2,h))%j(3)*Q(t(1,h))%j(1)
       V_out(h)%j(3) =   A(t(2,h))%j(3)*Q(t(1,h))%j(2)
@@ -975,27 +976,27 @@ subroutine vert_QS_A(g_RL, ntry, Q, S, Q_out, n, t)
   do h = 1, n(3)
     select case (Q(t(1,h))%h)
 
-    case (B"01")
+    case (B01)
       g_aux(2)   = g_RL(2) * S(t(2,h))%j(1)
       Q_out(h)%j(1:2) = 0
       Q_out(h)%j(3:4) = g_aux(2) * Q(t(1,h))%j(3:4)
-      Q_out(h)%h    = B"01"
+      Q_out(h)%h    = B01
 
-    case (B"10")
+    case (B10)
       g_aux(1)   = g_RL(1) * S(t(2,h))%j(1)
       Q_out(h)%j(1:2) = g_aux(1) * Q(t(1,h))%j(1:2)
       Q_out(h)%j(3:4) = 0
-      Q_out(h)%h    = B"10"
+      Q_out(h)%h    = B10
 
-    case (B"00")
+    case (B00)
       Q_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-      Q_out(h)%h = B"00"
+      Q_out(h)%h = B00
 
     case default
       g_aux        = g_RL * S(t(2,h))%j(1)
       Q_out(h)%j(1:2) = g_aux(1) * Q(t(1,h))%j(1:2)
       Q_out(h)%j(3:4) = g_aux(2) * Q(t(1,h))%j(3:4)
-      Q_out(h)%h      = B"11"
+      Q_out(h)%h      = B11
 
     end select
   end do
@@ -1042,27 +1043,27 @@ subroutine vert_SA_Q(g_RL, ntry, S, A, A_out, n, t)
   do h = 1, n(3)
     select case (A(t(2,h))%h)
 
-    case (B"01")
+    case (B01)
       g_aux(2)   = g_RL(2) * S(t(1,h))%j(1)
       A_out(h)%j(1:2) = 0
       A_out(h)%j(3:4) = g_aux(2) * A(t(2,h))%j(3:4)
-      A_out(h)%h    = B"01"
+      A_out(h)%h    = B01
 
-    case (B"10")
+    case (B10)
       g_aux(1)   = g_RL(1) * S(t(1,h))%j(1)
       A_out(h)%j(1:2) = g_aux(1) * A(t(2,h))%j(1:2)
       A_out(h)%j(3:4) = 0
-      A_out(h)%h    = B"10"
+      A_out(h)%h    = B10
 
-    case (B"00")
+    case (B00)
       A_out(h)%j = 0 ! needed to detect vanishing helicity configurations
-      A_out(h)%h = B"00"
+      A_out(h)%h = B00
 
     case default
       g_aux = g_RL * S(t(1,h))%j(1)
       A_out(h)%j(1:2) = g_aux(1) * A(t(2,h))%j(1:2)
       A_out(h)%j(3:4) = g_aux(2) * A(t(2,h))%j(3:4)
-      A_out(h)%h      = B"11"
+      A_out(h)%h      = B11
 
     end select
   end do
@@ -1111,14 +1112,14 @@ subroutine vert_AQ_S(g_RL, ntry, A, Q, S_out, n, t)
   do h = 1, n(3)
     select case (ishft(Q(t(2,h))%h,2) + A(t(1,h))%h)
 
-    case (B"1111")
+    case (B1111)
       S_out(h)%j(1) = g_RL(1) * (A(t(1,h))%j(1)*Q(t(2,h))%j(1) + A(t(1,h))%j(2)*Q(t(2,h))%j(2)) &
                     + g_RL(2) * (A(t(1,h))%j(3)*Q(t(2,h))%j(3) + A(t(1,h))%j(4)*Q(t(2,h))%j(4))
 
-    case (B"1010", B"1110", B"1011")
+    case (B1010, B1110, B1011)
       S_out(h)%j(1) = g_RL(1) * (A(t(1,h))%j(1)*Q(t(2,h))%j(1) + A(t(1,h))%j(2)*Q(t(2,h))%j(2))
 
-    case (B"0101", B"1101", B"0111")
+    case (B0101, B1101, B0111)
       S_out(h)%j(1) = g_RL(2) * (A(t(1,h))%j(3)*Q(t(2,h))%j(3) + A(t(1,h))%j(4)*Q(t(2,h))%j(4))
 
     case default

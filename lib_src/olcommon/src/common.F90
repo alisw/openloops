@@ -36,7 +36,7 @@ module ol_generic
   character(len=26), private, parameter :: upper_case = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   interface to_string
-    module procedure integer_to_string, integer1_to_string, integer2_to_string, &
+    module procedure integer_to_string, integer1_to_string, &
           & double_to_string, complex_to_string, single_to_string, &
           & integerlist_to_string, doublelist_to_string, complexlist_to_string, &
           logical_to_string
